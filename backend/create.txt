@@ -1,0 +1,821 @@
+
+
+
+Имя и адрес ресурса в сети, включает в себя URL и URN
+
+URI: https://somesite.ru/images/logo.png
+Адрес ресурса в сети, определяет местонахождение и способ обращения к нему
+
+URL — https://somesite.ru
+
+Имя ресурса в сети, определяет только название ресурса
+URN — images/logo.png
+
+URL адрес ресурса
+URN точный адрес картинки на ресерсе
+URL+URN = URI
+
+------------------------------------------------------------------------------------
+
+
+крат операции
+
+У каждого из методов есть назначение.
+● GET — получить данные с сервера (Read)       
+● POST — отправить данные на сервер  (Create)
+● PUT — изменить данные  на сервере (Update)
+● DELETE — удалить данные на сервере (Delete)
+
+
+запрос GET летит с браузера автоматически при обращении localhost:3000  
+
+ЭТО ОБРАБОТЧИК GET ЗАПРОСА НА СЕРВЕРЕ !!! :
+app.get('/', (req, res) => { res.send('papa idiot') })
+
+
+req.query ЭТО ОБЪЕКТ 
+
+const {name, age} = req.query !!!!!!!!!!
+
+обращение к куэри параметрам GET запроса(параметры после знака ? )
+req.query.name,
+req.query.age
+итд...
+
+====
+?
+v=qu3zxKtyD2o
+&
+list=PLvCaAwzmrwpPXTBR6r74YsbJZnVv20lvy
+&
+index=14
+====
+
+app - наш сервер
+'/' - адрес на сервере
+res.send('papa idiot') улетает на сервер
+
+
+------------------------------------------------------------------------------------------
+
+
+MIME type
+
+Описание типа данных, передаваемых по сети. Например:
+
+● text/plain — простой текст
+● text/html — HTML-документ
+● application/json — данные в JSON-формате
+● application/xml — XML-документ
+● multipart/form-data — бинарные данные
+
+---------------------------------------------------------------------------------------------
+
+
+получаем данные из параметризированного запроса
+
+в адресной строке браузера:
+localhost:3000/param/papaIdiot
+
+на сервере:
+app.get('/param/:some', (req, res) => {
+    console.log(req.params)
+}) 
+=> {some: 'papaIdiot'}
+
+
+
+
+дальше:
+
+
+
+в адресной строке браузера:
+localhost:3000/param/papaIdiot/true
+
+на сервере:
+app.get('/param/:some/:stuped', (req, res) => {
+    console.log(req.params)
+}) 
+=> {
+    some: 'papaIdiot',
+    stuped: true
+    }
+
+
+
+---------------------------------------------------------------------
+
+
+<form action="/registr" method="post" >
+     <input name="name" type="text"></input>
+     <input name="password" type="password"></input>
+     <button type="submit">отправить</button>
+</form>
+
+===
+name -Ы становятся клычами для объекта, а пользовательский ввод - значениями
+форма собирается в объект и летит на сервер в кодированном виде
+у post запроса есть body
+===
+при отправлении:
+зарпос полетит по адресу: action, методом: method
+
+обработка запроса  на сервере:
+
+
+===!!!!!!!
+app.use(express.urlencoded( {extended: true} ))
+типа мидлварка, требающая расшифровки post запроса
+===!!!!!!
+
+app.post('/registr', (req,res) => {
+console.log(req.body);
+res.end();
+})
+=> {
+    name: 'papa',
+    password: 123456
+}
+------------------------------------------------------------------------------------
+
+Express: установка, базовый сервер
+
+Установка: npm install express
+
+const express = require('express');
+
+const app = express();
+
+app.get('/', function (req, res) {
+res.send('Hello, world');
+});
+
+app.listen(3000, () => { console.log('Server started') });
+
+-------------------------------------------------------------------------------------
+
+Express: логирование запросов
+
+Установка: npm install morgan
+
+const morgan = require("morgan");
+
+app.use(morgan("dev"));
+
+------------------------------------------------------------------------------
+
+Express: виды ответов
+
+res.send(text)// послать текст с кодом 200 + завершить ответ
+res.json({ user: 'tobi' })// послать json с кодом 200 + завершить ответ
+res.end()// завершить ответ
+res.status(403)// установить код, но НЕ завершить ответ
+// установить код 500, послать json + завершить ответ
+res.status(500).json({ error: 'message' })
+res.status(404).end()// установить код + завершить ответ
+res.redirect('/other-route')// переадресовать клиента + завершить ответ
+res.write(data)// отправка части ответа, но НЕ завершает отве
+
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+
+инициализация проекта:
+
+
+terminal:
+
+npm init -y
+npx eslint --init
+git init
+npx create-gitignore Node
+npm install express
+npm i sequelize sequelize-cli pg pg-hstore
+npm i -D nodemon
+//npm install morgan
+npm install @babel/core @babel/preset-env @babel/preset-react @babel/register react react-dom
+
+
+DB:
+
+созд. файл со схемой создания попок:    .sequelizerc
+в нём:
+
+const path = require('path');
+
+module.exports = {
+  'config': path.resolve('db', 'config', 'database.json'),
+  'models-path': path.resolve('db', 'models'),
+  'seeders-path': path.resolve('db', 'seeders'),
+  'migrations-path': path.resolve('db', 'migrations')
+};
+
+
+
+
+terminal:
+
+npx sequelize init
+
+config/database.json
+
+
+  "development": {
+    "username": "leha",
+    "password": "123456",
+    "database": "world",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+
+
+  require('@babel/register');
+const express = require('express');
+const React = require('react');
+const ReactDomServer = require('react-dom/server');
+
+const app = express();
+const path = require('path');
+const fs = require('fs').promises;
+const morgan = require('morgan');
+
+const Layout = require('./components/Layout');
+//const Form = require('./components/Form');
+//const StudentsList = require('./components/StudentsList');
+
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan('dev'));
+
+
+файл    .babelrc
+
+{
+  "presets": ["@babel/preset-env", "@babel/preset-react"]
+}
+
+-------
+
+
+
+React SSR: компонент обёртка Layout
+
+Layout — главный компонент, в который будем вставлять остальные.
+// components/Layout.jsx
+const React = require('react');
+
+  function Layout({ title, children }) {
+                        (ПРОПСЫ) объект, который принимает Layout
+return (
+
+<html lang="en">
+Props
+<head>
+<title>{title}</title>
+<link rel="stylesheet" href="style.css" />
+<script src="script.js" />
+</head>
+<body>{children}</body>
+</html>
+
+);
+};
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+children => зарезервированное поле, в которое помещается то, что поподает в <body>{children}</body>
+
+function form( {title} ){
+              (ПРОПСЫ)
+return(
+
+<Layout title={title}>
+
+<form>
+</form>
+
+</Layout>
+
+)
+}
+обёрнутое в Layout поподает на место children !!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+module.exports = Layout
+
+
+
+отправляем целый файл клиенту:
+
+
+app.get('/', (req, res) => {
+    const element = React.createElement(Layout, {title: 'papa loh'})  => создаём реакт элемент
+                                                     (ПРОПСЫ): так передаються в Layout
+
+    const html = ReactDomServer.rendetToStaticMarkup(element) ;  => превращаем его  в читаемый html 
+
+    const doc = `<!DOCTYPE html>${html}` => добавляем доктайп
+
+    res.send(doc)    => отправляем в браузер
+
+})
+
+
+app.get('/', (req, res) => {
+    const element = React.createElement(form, {title: 'papa loh'})  => создаём реакт элемент
+                                                     (ПРОПСЫ): так передаються в form
+
+    const html = ReactDomServer.rendetToStaticMarkup(element) ;  => превращаем его  в читаемый html 
+
+    const doc = `<!DOCTYPE html>${html}` => добавляем доктайп
+
+    res.send(doc)    => отправляем в браузер
+
+})
+
+компоненты jsx require React и Layout если нужно
+-------------------------------------------------------------------
+
+
+======
+const path = req ('path')
+app.sendFile(path.join(__dirName, '', ''))
+=======
+
+
+
+-------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------
+
+DATA BASE                                 ! DB !
+
+
+
+
+npm init -y
+npx eslint --init
+git init
+npx create-gitignore Node
+npm i sequelize sequelize-cli pg pg-hstore
+
+
+
+
+
+созд. файл со схемой создания попок:    .sequelizerc
+в нём:
+
+const path = require('path');
+
+module.exports = {
+  'config': path.resolve('db', 'config', 'database.json'),
+  'models-path': path.resolve('db', 'models'),
+  'seeders-path': path.resolve('db', 'seeders'),
+  'migrations-path': path.resolve('db', 'migrations')
+};
+
+
+
+
+terminal:
+npx sequelize init
+
+
+
+
+config/database.json
+
+
+  "development": {
+    "username": "leha",
+    "password": "123456",
+    "database": "world",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+
+
+=================================   создание моделей
+npx sequelize model:create --name < название модели в единственном числе с Большой буквы >
+--attributes model:text,info:text,driver_id:integer
+npx sequelize model:create --name User --attributes name:text,image:text,info:text
+====================================
+
+
+
+
+
+
+=====
+для зависимой модели:
+
+  driver_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+      
+        references: {
+          model: '< имя таблицы во множ. числе с Большой буквы >',
+                         
+          key: 'id'
+        }
+     
+      }
+=====
+
+
+ассоциации:
+
+пример для driver:
+
+static associate({ Car, Like }){
+  this.hasMany(Car, {foreignKey: 'driver_id'})
+  this.hasMany(Like, {foreignKey: 'driver_id'})
+  belongsTo
+  (пренадлежит)
+}
+
+                              
+
+                              СИДЫ
+
+================================================================== создание сидов
+npx sequelize seed:create --name demo-drivers
+==================================================================
+
+прим для драйвера:
+module.exports = {
+
+async up(queryInterface, lllll){
+  const driversData = [
+
+{
+  name: 'hren',
+  image: 'hrenhhadsoio'
+}
+
+  ]
+
+const drivers = driversData.map((driver) => ({...driver, createdAt: new Date(), updatedAt: new Date()}))
+
+ await  queryInterface.bulkInsert('Drivers', drivers)
+}
+
+
+
+async down(queryInterface){
+  await  queryInterface.bulkDelete('Drivers')
+}
+
+}
+
+
+
+=========================
+
+
+npx sequelize db:create   созд. базы
+
+npx sequelize db:migrate  созд. табл.
+
+npx sequelize db:drop     снос базы
+
+npx sequelize db:seed:all
+
+=============
+
+
+postgres kill
+212   34:09
+
+
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
+
+                           NEXT OF SERVER( drivers )
+
+npm init -y
+npx eslint --init
+git init
+npx create-gitignore Node
+npm i sequelize sequelize-cli pg pg-hstore
+npm i express
+npm i -D nodemon
+npm install @babel/core @babel/preset-env @babel/preset-react @babel/register react react-dom
+
+
+=====
+файл    .babelrc
+{
+  "presets": ["@babel/preset-env", "@babel/preset-react"]
+}
+=====
+
+=======
+file
+app.js 
+
+  require('@babel/register');
+const express = require('express');
+const React = require('react');
+const ReactDomServer = require('react-dom/server');
+
+const app = express();
+const path = require('path');
+const fs = require('fs').promises;
+const morgan = require('morgan');
+
+const Layout = require('./components/Layout');
+
+
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan('dev'));
+
+=======
+
+
+
+package.json
+"dev": "nodemon app.js --ext js,json,jsx"
+
+----------------------------------------------
+
+                                 ROUTES
+
+import routa
+app.use('/drivers', route)
+
+
+создать папку routes => drivers.routes.js
+
+in file => const router = require('express').Router(), React
+    router.get('/', (req, res) => {})
+--------------------------------------------------------
+
+
+dir components => Layout => React
+{drivers.map((driver) => (<driverItem key={driver.id} driver={driver}/>))}
+
+
+get db in route:
+ const { Driver } = require('../db/models')
+ const Drivers = require('../components/Drivers')
+ const React...
+ const ReactDomServer...
+
+ router.get('/', async (req, res) => {
+
+try{
+
+const drivers = await Driver.findAll({raw: true})
+//const driversElement = React.createElement(Drivers, {title:"", drivers})
+                                            (component)   (props)
+//const html = ReactDomServer.renderToStaticMarkup(driversElement)
+//const elem = `<!DOCTYPE html>${html}`
+   // res.send(elem)
+=======  middleware
+
+res.renderComponent(Drivers, {title: '', drivers})
+                  (component)   (props)
+=========
+} catch ({message}){
+  res.json(message)
+}
+
+ })
+
+
+в апп над роутами 
+//app.use(express.static(path.join(__dirName, 'public')))
+app.use(express.static( 'public')) //типа первая мидлварка
+
+!!!!!!!!!!
+dir middleware => ssr.js
+
+const React = require('react');
+const ReactDOMServer = require('react-dom/server');
+
+
+
+
+function renderComponent(reactComponent, props = {}, options = { htmlOnly: false }) {
+  const reactElement = React.createElement(reactComponent, {
+    ...this.app.locals, // передать app.locals => живёт по всей ноде до перезагрузки сервера
+    ...this.locals, // передать res.locals => живет только во время ответа
+    ...props, // передать пропсы
+  });
+
+  const html = ReactDOMServer.renderToStaticMarkup(reactElement);
+
+  if (options.htmlOnly) {
+    return html;
+  }
+  const document = `<!DOCTYPE html>${html}`;
+  this.send(document);
+}
+
+
+function ssr(req, res, next) {
+  res.renderComponent = renderComponent;
+  next();
+}
+
+module.exports = ssr;
+
+app.use(ssr)
+
+
+components navBar
+
+function navBar(){
+
+  return(
+
+<ul style={{display: "flex"}}>
+     <li className=""> <a  href="/" >Main</a> </li>
+          (class)
+</ul>
+
+  ) 
+
+}
+
+in Layout=> <navBar />
+
+
+
+------------------------------------bootstrap 5 212 1:37
+const {carId} = req.params
+const car = Car.findOne({where: {id: carId}})
+
+-----------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------
+
+                              FETCH
+
+==========================   В скрипте, отправленном на клиент
+const response = await fetch('any url', {......}, body: JSON.stringify({}))
+        (adres)  (optons)       (body)
+
+const response = await fetch('any url', {
+  method,
+  headers{'Content-type': 'application/json'},
+
+}, body: JSON.stringify({
+  name: name.value,
+  itd: itd.value,
+  ........
+}))
+==============================
+
+  JSON.stringify({})  => превращает объект в строку 
+
+
+=========== 
+const response = await fetch('/') =>  отправляет гет-запрос на сервер и ждёт ответа
+
+на сервере:
+res.json({...}) => отправляет клиенту объект(строку в джейсоне)
+
+на клиенте:
+
+const body = await json(response) => получаем в боди нормальный объект  ???
+const data = await response.json() => распарсить ответ с сервера
+==========
+
+
+======== cсоздание драйвера для базы данных БЕЗ ФИТЧА !!!!!!
+const driver = await Driver.create({совместимый набор ключей и значений})
+                    (модель)
+//res.json(driver)
+==============
+
+
+
+defer!!!!
+
+if(form){
+  form.addEventListener('submit', (e) = {
+e.preventDefault();  //не даёт странице перезагрузиться
+фетч
+  })
+}
+
+app.use(express.json())
+
+
+
+
+============================================
+===================================================
+===================================================
+
+
+
+const response = await fetch(`/mushrooms/${e.target.id}`,{
+            method: "DELETE"
+
+        })
+
+     const data = await response.json();
+     console.log(data)
+       data.message ? e.target.closest('.card').remove() : false;
+
+
+
+
+
+ const data = await response.json();
+        //console.log(data.html)
+        const list = document.getElementById('mushrooms-list');
+        list.insertAdjacentHTML('afterend', data.html);
+        doThis();
+
+
+
+
+
+
+
+
+router.delete('/:mushroomId', async (req, res) => {
+
+    try{
+    const {mushroomId} = req.params;
+   
+//console.log(mushroomId )
+        const rez = await Mushroom.destroy({where: {id: mushroomId}})
+    
+       rez ?  res.json({message: 'del'}) : false;
+
+    }catch({message}){
+        res.json(message)
+    }
+    
+    })
+
+
+
+
+
+
+router.post('/', async (req, res) => {
+   
+    try{
+    //console.log(req.body)
+    const el = await Mushroom.create(req.body);
+  
+/////////      
+const element = React.createElement(CompMushroom, {el});
+const html = ReactDOMServer.renderToStaticMarkup(element)
+res.json({message: 'here', html})
+/////////////
+    }catch({message}){
+      res.json(message)
+    }
+    
+    })
+    
+    
+    
+    
+    
+    
+    
+    
+     e.preventDefault();
+          //console.log(e.target.name.value)
+      const {name, info, image, mushroomer_id, action, method} = e.target;
+    
+      //console.log(method)
+       const response = await fetch(action, {
+        method,
+        headers:{'Content-type': 'application/json'},
+        body: JSON.stringify({
+            name: name.value,
+            info: info.value,
+            image: image.value,
+            mushroomer_id: mushroomer_id.value
+        })
+       })
+       //console.log(response)
+        const data = await response.json();
+        //console.log(data.html)
+        const list = document.getElementById('mushrooms-list');
+        list.insertAdjacentHTML('afterend', data.html);
+        doThis();
+    
+    
+    findAll({raw: true, order: ['id', 'DESC']})
+    
+    
+    
+    
+    
+
+
+
+
+
+

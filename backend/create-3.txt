@@ -1,0 +1,127 @@
+
+
+npm i cookie-parser
+npm i express-session
+npm i session-file-store
+npm i bcrypt
+
+
+views => users.routes.js =>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+const router = require('express').Router();
+const bcrypt = require('bcrypt');
+const {User} = require('../../db/models');
+const Component = require();
+
+
+router.route('/users')
+.get((req, res) => {
+    User.findAll( {raw: true} )
+    .then( (users) => {
+
+        //HTTP Headers Set-Cookie установка без сессии
+res.cookie( 'firstCookie', 2023); // видна в браузере по document.cookie (сессионная)
+
+res.cookie( 'firstCookie', 2023, {httpOnly: true} ); // НЕ видна в браузере по document.cookie (только сервер)
+
+res.cookie( 'firstCookie', 2023, {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24
+    }); // будет жить 1 сутки (НЕ сессионная)
+
+    res.cookie( 'firstCookie', 2023, {
+    httpOnly: true,
+    expires: new Date('Dec 31, 2023')
+    }); // будет жить до (НЕ сессионная)
+
+        // html
+      res.renderComponent(Component, {title: 'users list', users: users}) 
+
+        })
+    .catch(err => res.status(500).json({message: err.message}))
+})
+
+
+
+router.route('/')
+.get((req, res) => {
+  console.log(req.cookies)
+});
+
+
+router.get('/logout' (req, res) => {
+    res.clearCookie('firstCookie');
+    res.send('clear ok!');
+})
+
+
+
+
+
+
+router.route('/users')
+.get((req, res) => {
+    User.findAll( {raw: true} )
+    .then( (users) => {
+
+// наполнение сесии сервера
+
+if (req.session.userId) {
+
+  // html
+      res.renderComponent(Component, {title: `user id ${req.session.userId}`, users: users}) 
+
+}
+else {
+    req.session.userId = 1;
+
+      res.redirect(/users)
+}
+
+      
+
+        })
+    .catch(err => res.status(500).json({message: err.message}))
+})
+
+
+//регистрация:
+
+router.route('/reg')
+.get((req, res) => {
+
+})
+.post( async (req, res) => {
+
+const {email, password} = req.body;
+const candidate = await User.findOne({where: {email: email}});
+
+if(!candidate){
+    const hash = await bcrypt.hash(password, 10);
+    const {dataValues: user} = User.create({email, password: hash});
+    req.session.userId = user.id;
+};
+
+})
+
+-------------------------------- loginisation
+const isSame = await bcrypt.compare(req.body.password, user.password);
+--------------------------------
+
+
+словарь
+
+addEventListener
+div.insertAdjacentHTML('afterbegin', data.html);
+insertAdjacentHTML('beforeEnd', data.html);
+
+
+
+
+
+
+
+
+module.exports = router;
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

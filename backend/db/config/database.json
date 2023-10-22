@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "leha",
+    "password": "123456",
+    "database": "pixel",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+}

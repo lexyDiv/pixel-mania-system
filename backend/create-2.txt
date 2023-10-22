@@ -1,0 +1,232 @@
+
+
+config => serverConfig.js, sessionConfig
+routes => api, views
+
+api => users.routes.js -- Отдаёт ресурсы НЕ html (json)
+views => users.routes.js -- Отдаёт  (html/text)
+
+
+
+
+
+
+
+
+
+api => users.routes.js =>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+const router = require('express').Router();
+const {User} = require('../../db/models');
+
+router.route('/users')
+.get((req, res) => {
+    User.findAll()
+    .then(user => res.json(user))
+    .catch(err => res.status(500).json({message: err.message}))
+})
+.post((req, res) => {
+    User.create(req.body)
+    .then(newUser => res.status(201).json(newUser))
+    .catch(err => res.status(500).json({message: err.message}))
+})
+
+параматрезированные:
+router.route('/users/:id')
+.put((req, res) => {
+    const {id} = req.params;
+    User.update(req.body, {where: {id: id}, raw: true, returning: true})
+    .then( ([, [updatedUser]]) => res.json(updatedUser))
+    .catch(err => res.status(500).json({message: err.message}))
+})
+.delete((req, res) => {
+    const id = req.params.id;
+    User.destroy({where: {id}})
+    .then(deletedUser => deletedUser ? res.json({delete: true} : res.status(404).json({delete: false}))
+    .catch(err => res.status(500).json({message: err.message}))
+})
+
+module.exports = router
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+
+views => users.routes.js =>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+const router = require('express').Router();
+const {User} = require('../../db/models');
+const Component = require()
+
+router.route('/users')
+.get((req, res) => {
+    User.findAll( {raw: true} )
+    .then(users => res.renderComponent(Component, {title: 'users list', users: users}))
+    .catch(err => res.status(500).json({message: err.message}))
+});
+
+
+router.route('/')
+.get((req, res) => {
+  console.log(req.cookies)
+});
+
+
+router.get('/logout' (req, res) => {
+    res.clearCookie('firstCookie');  //серверное удаление куки по имени
+    res.send('clear ok!');
+})
+
+
+
+
+module.export = router;
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+config => serverConfig => serverConfig.js =>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const ssr = require('../middleware/ssr');
+const sessionConfig = require('./sessionConfig');
+
+
+
+const serverConfig = (app) => {
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirName, '..', 'public')));
+app.use(ssr);
+app.use(cookieParser());
+app.use(session(sessionConfig));
+}
+
+module.exports = serverConfig
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+
+config => sessionConfig => sessionConfig.js
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+const session = require('express-session');
+const fileStore = require('session-file-store');
+
+const sessionConfig{
+    store: new fileStore(),
+    name: 'user-sid',
+    secret: process.env.SESSION_SECRET ?? 'test',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 12,
+        httpOnly: true
+    }
+}
+
+module.exports = sessionConfig;
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+
+
+app.js =>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+require('@babel/register');
+const express = require('express');
+const serverConfig = require('./config/serverConfig');
+const apiUserRouter = require('./routes/api/users.routes');
+const userRouter = require('./routes/views/users.routes');
+
+
+      
+
+//const React = require('react');
+//const ReactDomServer = require('react-dom/server');
+
+const app = express();
+const PORT = process.env.PORT ?? 3000;
+
+
+
+serverConfig(app);
+
+//routing
+ app.use('/api', apiUserRouter);
+ app.use('/', userRouter);
+
+
+app.listen(PORT, () => {
+    console.log(`Go on port ${PORT}`)
+})
+
+
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+
+примечания:
+cd config/ вход в конфиг
+cd .. назад
+killall node   если занят порт
+
+
+get =>   получить
+post =>   создать
+put/users/8 =>   заменить прим. заиенить юзера по id:8 !!! параматрезированные
+delete/8 =>   удалить !!! параматрезированные
+put/articles/3/comments/5  заменить комментарий 5 в статье 3
+
+выяснить разницу между res.end() res.send()
+
+e.target.closest('').remove(); ?
+e.target.dataset ?
+e.target.nameList ?
+ window.locations.assign('/')
+
+
+"dev": "nodemon app.js --ext js,json,jsx --ignore ./sessions" 
+
+проверка на удаление юзера при наличии сесии :
+
+------------------------
+const {id} = rqe.params;
+if(id === req.session.userId){
+    delete
+
+res.clearCookie('name')
+
+}
+else{
+    res.status(400).json({message: 'stop'})
+}
+------------------------
+
+
+req.sessioin.destroy((error) => {
+
+if(error){
+    return res.status(500).json({message: 'ne smog delete'})
+}
+
+res
+.clearCookie('name')
+.json({message: 'ok'})
+})
+
+
+123 => $2b$10$pafoBu0eAAIO17yLE1wKiePFxX8mkjjdA0c6uJ.X4Rb6aLrg07HYi
+
+
